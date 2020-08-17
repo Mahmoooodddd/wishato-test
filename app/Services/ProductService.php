@@ -37,7 +37,6 @@ class ProductService
 
             $productId = $product->id;
             $productName = $product->name;
-            $basePrice=$product->base_price;
             if (in_array($productId, $productIds)) {
                 foreach ($finalProducts as &$finalProduct) {
                     if ($finalProduct['productId'] == $productId) {
@@ -54,7 +53,6 @@ class ProductService
                 $finalProducts[] = [
                     'productId' => $productId,
                     'productName' => $productName,
-                    'basePrice' => $basePrice,
                     'variations' => [
                         [
                             'id' => $product->variation_id,
@@ -69,7 +67,7 @@ class ProductService
 
         }
 
-        return $this->success($finalProducts);
+        return $finalProducts;
 
     }
 

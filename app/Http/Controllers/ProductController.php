@@ -22,8 +22,8 @@ class ProductController extends CoreController
         $minPrice=$request->input('min_price');
         $maxPrice=$request->input('max_price');
 
-        $result =$this->productService->getProductList($page,$name,$minPrice,$maxPrice);
-        return $this->response($result);
+        $products =$this->productService->getProductList($page,$name,$minPrice,$maxPrice);
+        return view('product.index', ['products' => $products]);
 
     }
 }

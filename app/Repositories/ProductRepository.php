@@ -26,18 +26,38 @@ class ProductRepository extends CoreRepository
     }
 
 
-    public function getProductsByPaginations($page, $name,$minPrice,$maxPrice)
+    public function getProductsByPaginations($page, $name, $minPrice, $maxPrice)
     {
+        $pageSize = 10;
         $products = DB::table('products')
-            ->select('products.*','pv.id as variation_id','pv.name as variation_name', 'pv.price as variation_price');
+            ->select('products.*', 'pv.id as variation_id', 'pv.name as variation_name', 'pv.price as variation_price');
+
+        $paginationJoin = DB::table('products')
+            ->select(DB::raw('DISTINCT(products.id)'))
+            ->orderBy('id', 'desc')->skip($page * $pageSize)->take($pageSize);
+
 
         if ($name != "") {
             $products->where('products.name', 'like', '%' . $name . '%');
+            $paginationJoin->where('products.name', 'like', '%' . $name . '%');
         };
-
-        $products->leftJoin(
+        $paginationJoin->join(
             'product_variations as pv', function ($join) use ($minPrice, $maxPrice) {
-            $join->on('products.id' , '=', 'pv.product_id');
+            $join->on('products.id', '=', 'pv.product_id');
+            if ($minPrice && is_numeric($minPrice)) {
+                $join->where('pv.price', '>=', $minPrice);
+            }
+
+            if ($maxPrice && is_numeric($maxPrice)) {
+                $join->where('pv.price', '<=', $maxPrice);
+            }
+        });
+//        dump($paginationJoin->toSql());
+
+
+        $products->join(
+            'product_variations as pv', function ($join) use ($minPrice, $maxPrice) {
+            $join->on('products.id', '=', 'pv.product_id');
             if ($minPrice && is_numeric($minPrice)) {
                 $join->where('pv.price', '>=', $minPrice);
             }
@@ -48,7 +68,12 @@ class ProductRepository extends CoreRepository
         });
 
 
-        $products =$products->skip($page * 10)->take(100)->get();
+
+
+        $products->joinSub($paginationJoin, 'pagination_join', function ($join) {
+            $join->on('products.id', '=', 'pagination_join.id');
+        });
+        $products = $products->get();
         return $products;
 
     }
