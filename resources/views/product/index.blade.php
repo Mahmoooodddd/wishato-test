@@ -5,7 +5,7 @@
         <div class="form-group">
             <label for="fname" class="col-form-label">name:</label>
             <input type="text" id="name" name="name">
-            <bottun type="submit" class="btn btn-primary">search</bottun>
+            <button type="submit" class="btn btn-primary">search</button>
             <a href="/product" class="btn btn-danger">Reset Filters</a>
         </div>
     </form>
