@@ -9,9 +9,7 @@
 namespace App\Repositories;
 
 
-use App\Book;
 use App\Product;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductRepository extends CoreRepository
@@ -28,7 +26,7 @@ class ProductRepository extends CoreRepository
 
     public function getProductsByPaginations($page, $name, $minPrice, $maxPrice)
     {
-        $pageSize = 10;
+        $pageSize = 2;
         $products = DB::table('products')
             ->select('products.*', 'pv.id as variation_id', 'pv.name as variation_name', 'pv.price as variation_price');
 
@@ -59,7 +57,7 @@ class ProductRepository extends CoreRepository
 
 
         $paginationJoin->select((DB::raw('DISTINCT(products.id)')));
-        $paginationJoin->orderBy('id', 'desc')->skip($page * $pageSize)->take($pageSize);
+        $paginationJoin->orderBy('id', 'asc')->skip($page * $pageSize)->take($pageSize);
 
 
         $products->join(

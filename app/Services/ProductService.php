@@ -8,12 +8,8 @@
 
 namespace App\Services;
 
-
-use App\Book;
-use App\Repositories\BookRepository;
 use App\Repositories\ProductRepository;
 use App\Traits\serviceResponseTrait;
-use Illuminate\Http\Request;
 
 class ProductService
 {
@@ -23,11 +19,11 @@ class ProductService
 
     public function __construct(ProductRepository $productRepository)
     {
-        $this->productRepository= $productRepository;
+        $this->productRepository = $productRepository;
     }
 
 
-    public function getProductList($page, $name, $minPrice, $maxPrice)
+    public function getProductList($page, $name, $minPrice, $maxPrice, $fromApi = false)
     {
         list($count, $products) = $this->productRepository->getProductsByPaginations($page, $name, $minPrice, $maxPrice);
         $finalProducts = [];
@@ -67,11 +63,16 @@ class ProductService
 
         }
 
-        return [
+        $data = [
             'count' => $count,
             'products' => $finalProducts
         ];
 
+        if ($fromApi) {
+            return $this->success($data);
+        }
+
+        return $data;
     }
 
 
