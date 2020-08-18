@@ -27,9 +27,9 @@ class ProductService
     }
 
 
-    public function getProductList($page,$name,$minPrice,$maxPrice)
+    public function getProductList($page, $name, $minPrice, $maxPrice)
     {
-        $products =$this->productRepository->getProductsByPaginations($page,$name,$minPrice,$maxPrice);
+        list($count, $products) = $this->productRepository->getProductsByPaginations($page, $name, $minPrice, $maxPrice);
         $finalProducts = [];
         $productIds = [];
 
@@ -67,7 +67,10 @@ class ProductService
 
         }
 
-        return $finalProducts;
+        return [
+            'count' => $count,
+            'products' => $finalProducts
+        ];
 
     }
 

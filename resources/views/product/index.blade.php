@@ -25,7 +25,12 @@
             </tbody>
         </table>
     @endforeach
+    <div class="pagination">
+        @for($i=0;$i< ceil($count/10); $i++)
+            <a href="{{$hrefString}}&page={{$i}}" class="{{$i==$currentPage ? 'active' : ''}}">{{$i+1}}</a>
 
+        @endfor
+    </div>
 
 
 @endsection

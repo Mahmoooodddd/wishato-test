@@ -17,13 +17,29 @@ class ProductController extends CoreController
 
     public function index(Request $request)
     {
-        $page = $request->input('page');
+        $page = $request->input('page') ?? 0;
         $name = $request->input('name');
-        $minPrice=$request->input('min_price');
-        $maxPrice=$request->input('max_price');
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
+        $filters = [];
 
-        $products =$this->productService->getProductList($page,$name,$minPrice,$maxPrice);
-        return view('product.index', ['products' => $products]);
+
+        if ($name && $name != '') {
+            $filters['name'] = $name;
+        }
+        if ($minPrice && is_numeric($minPrice)) {
+            $filters['min_price'] = $minPrice;
+        }
+
+        if ($maxPrice && is_numeric($maxPrice)) {
+            $filters['max_price'] = $maxPrice;
+        }
+        $hrefString = '/product?' . http_build_query($filters);
+
+
+        $result = $this->productService->getProductList($page, $name, $minPrice, $maxPrice);
+        $productCount = $result['count']->toArray()[0]->productCount;
+        return view('product.index', ['products' => $result['products'], 'count' => $productCount, 'hrefString' => $hrefString, 'currentPage' => $page]);
 
     }
 }

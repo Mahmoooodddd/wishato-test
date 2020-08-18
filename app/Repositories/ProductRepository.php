@@ -32,15 +32,16 @@ class ProductRepository extends CoreRepository
         $products = DB::table('products')
             ->select('products.*', 'pv.id as variation_id', 'pv.name as variation_name', 'pv.price as variation_price');
 
-        $paginationJoin = DB::table('products')
-            ->select(DB::raw('DISTINCT(products.id)'))
-            ->orderBy('id', 'desc')->skip($page * $pageSize)->take($pageSize);
+        $paginationJoin = DB::table('products');
+//            ->select(DB::raw('DISTINCT(products.id)'));
+
 
 
         if ($name != "") {
             $products->where('products.name', 'like', '%' . $name . '%');
             $paginationJoin->where('products.name', 'like', '%' . $name . '%');
         };
+
         $paginationJoin->join(
             'product_variations as pv', function ($join) use ($minPrice, $maxPrice) {
             $join->on('products.id', '=', 'pv.product_id');
@@ -52,7 +53,13 @@ class ProductRepository extends CoreRepository
                 $join->where('pv.price', '<=', $maxPrice);
             }
         });
-//        dump($paginationJoin->toSql());
+
+        $paginationJoinCount=clone $paginationJoin;
+        $count=$paginationJoinCount->addSelect(DB::raw('count(DISTINCT(products.id)) as productCount'))->get();
+
+
+        $paginationJoin->select((DB::raw('DISTINCT(products.id)')));
+        $paginationJoin->orderBy('id', 'desc')->skip($page * $pageSize)->take($pageSize);
 
 
         $products->join(
@@ -74,7 +81,7 @@ class ProductRepository extends CoreRepository
             $join->on('products.id', '=', 'pagination_join.id');
         });
         $products = $products->get();
-        return $products;
+        return [$count,$products];
 
     }
 
