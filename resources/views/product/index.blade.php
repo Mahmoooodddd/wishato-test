@@ -3,32 +3,41 @@
 @section('content')
     <form action="/product" method="get">
         <div class="form-group">
-        <label for="fname" class="col-form-label">name:</label>
-        <input type="text" id="name" name="name">
-        <bottun type="submit" class="btn btn-primary" >search</bottun>
+            <label for="fname" class="col-form-label">name:</label>
+            <input type="text" id="name" name="name">
+            <bottun type="submit" class="btn btn-primary">search</bottun>
             <a href="/product" class="btn btn-danger">Reset Filters</a>
         </div>
     </form>
-    @foreach($products as  $product)
-        <table class="table table-bordered table-hover">
-            <th style="font-size:25px;width: 1000px;text-align:center">{{$product['productName']}}</th>
-            <tr>
-                <th>id</th>
-                <th>name</th>
-                <th>price</th>
-            </tr>
-            <tbody>
-            @foreach($product['variations'] as $productVariation)
-                <tr>
-                    <td>{{$productVariation['id']}}</td>
-                    <td>{{$productVariation['name']}}</td>
-                    <td>{{$productVariation['price']}}</td>
+    <div class="all-products">
+        @foreach($products as  $product)
+            <div class="card">
+                <img src="/product.png" alt="Denim Jeans" style="width:100%">
+                <h1>{{$product['productName']}}</h1>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>name</th>
+                        <th>price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($product['variations'] as $productVariation)
+                        <tr>
+                            <td>{{$productVariation['id']}}</td>
+                            <td>{{$productVariation['name']}}</td>
+                            <td>{{$productVariation['price']}}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <br>
 
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-    @endforeach
+
+        @endforeach
+    </div>
     <div class="pagination">
         @for($i=0;$i< ceil($count/2); $i++)
             <a href="{{$hrefString}}&page={{$i}}" class="{{$i==$currentPage ? 'active' : ''}}">{{$i+1}}</a>
